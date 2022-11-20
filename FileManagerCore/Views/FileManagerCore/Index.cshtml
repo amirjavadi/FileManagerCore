@@ -1,0 +1,537 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> FileManagerCore</title>
+    <link rel="stylesheet" href="~/fonts/vazir/font-face.css" />
+    <link rel="stylesheet" href="~/fonts/feather/style.css" />
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/lightbox/dist/ekko-lightbox.css" />
+    <link rel="stylesheet" href="~/lib/dropzone/dropzone.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+</head>
+<body class="">
+    <header>
+
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-1">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <div class="btn-group btn-group-toggle d-flex w-25" data-toggle="buttons">
+                        <label class="btn btn-sm btn-light btn-filter  active">
+                            <input type="radio" name="options" value="all" checked> all
+                        </label>
+                        <label class="btn btn-sm btn-light btn-filter">
+                            <input type="radio" name="options" value="folders"> folders
+                        </label>
+                        <label class="btn btn-sm btn-light btn-filter">
+                            <input type="radio" name="options" value="images"> images
+                        </label>
+                        <label class="btn btn-sm btn-light btn-filter">
+                            <input type="radio" name="options" value="videos"> videos
+                        </label>
+                        <label class="btn btn-sm btn-light btn-filter">
+                            <input type="radio" name="options" value="files"> files
+                        </label>
+
+                    </div>
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+
+                        </li>
+
+
+                    </ul>
+                </div>
+
+                <button class="nav-link text-light btn btn-primary ml-1" id="upload-button" href="javascript:void(0);"><i class='ft-upload'></i> Upload File</button>
+                <button class="nav-link  text-light btn btn-warning ml-1 new-folder" href="javascript:void(0);"><i class='ft-folder'></i> Create Folder</button>
+            </div>
+        </nav>
+        <div class="progress" style="height: 5px;display:none" id="progressbarloading">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+        </div>
+    </header>
+
+    <div class="container-fluid " id="FilePanle">
+        <main role="main" class=" pr-2">
+            <nav class="breadcrumb b-0 overflow-hidden" aria-label="breadcrumb" style='justify-content: space-between;padding-bottom: 0;'>
+
+
+
+                <ol class="breadcrumb p-0" id="breadcrumb-id" data-currentpath=''>
+                </ol>
+                <div class="btn-group btn-group-sm" role="group" style='align-items: start;'>
+                    <a class="btn btn-light disabled" id="paste-btn" disabled><i class="ft-briefcase"></i></a>
+                    <a class="btn btn-light btn-copy-cut" title="copy" data-command='copy'><i class='ft-copy'></i></a>
+                    <a class="btn btn-light btn-copy-cut" title="cut" data-command='cut'><i class='ft-save'></i></a>
+                </div>
+            </nav>
+            <div class="row row-cols-1 row-cols-md-4" id="content-filemanager">
+
+
+                <!-- sample div for folder
+                <div class="col-lg-1 col-lg-2 col-md-3 col-md-4 col-sm-6 mb-4">
+
+                    <div class="card card-folders">
+
+                        <div class="text-center overflow-hidden" style="background-image:url('../imgs/folder.png');    background-repeat: no-repeat; background-position: center;min-height: 200px;display: block;">
+                            <div class="btn-group info-files" role="group">
+                                <a class="btn btn-light disabled" disabled><i class="ft-download"></i></a>
+                                <a class="btn btn-light disabled" disabled><i class='ft-eye'></i></a>
+                                <a class="btn btn-light"><i class='ft-trash'></i></a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center">نام فولدر اول</h5>
+                        </div>
+
+                    </div>
+
+                </div>
+                end sample div for folder -->
+                <!-- sample div from file images
+                <div class="col-lg-1 col-lg-2 col-md-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card card-images" data-filter="images">
+                        <div class="text-center overflow-hidden" style="background-image:url('../imgs/images.jpg');    background-repeat: no-repeat; background-position: center;min-height: 200px;display: block;">
+                            <div class="btn-group info-files" role="group">
+                                <a href="../imgs/images.jpg" target="_blank" class="btn btn-light"><i class="ft-download"></i></a>
+                                <a href="../imgs/images.jpg" class="btn btn-light" data-toggle="lightbox"><i class='ft-eye'></i></a>
+                                <a class="btn btn-light"><i class='ft-trash'></i></a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center">نام فولدر اول</h5>
+                        </div>
+                    </div>
+                </div>
+                 end sample div from file images -->
+
+
+
+            </div>
+
+
+
+
+
+        </main>
+
+    </div>
+
+
+    <!-- Upload panel -->
+    <div id="upload-files" style=" position: absolute;width: 100%;height: 100vh;text-align: center;z-index: 99999;    background: #fff;top: 0;display:none;">
+        <form asp-action="UploadFile" method="post" class="dropzone dropzone-area" id="dpz-multiple-files dropzone dropzone-area dz-clickable">
+            <input type="hidden" value="" name="folder" id="dropzone-path-folder" />
+            <div class="dz-message">Drop Files Here To Upload</div>
+        </form>
+
+        <button class="btn btn-primary" id="close-uploadpanel">retrun to back</button>
+    </div>
+    <!-- end upload panel -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script src="~/lib/dropzone/dropzone.min.js"></script>
+    <script src="~/js/site.js"></script>
+
+
+    <script>
+
+        //Configs
+
+        $(function () {
+
+            $(document).on('click', '[data-toggle="lightbox"]', function (event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+
+            $(document).on('click', '#close-uploadpanel', function (e) {
+                e.preventDefault();
+                $("#upload-files").slideUp();
+                loadFolderFiles($("#breadcrumb-id").data("currentpath"))
+            });
+
+            $(document).on('click', '#upload-button', function (e) {
+                e.preventDefault();
+                $("#upload-files").slideDown();
+            });
+
+            $(document).on('click', ".btn-filter", function () {
+                //$('.card').parent().removeClass('d-none').fadeIn()
+                var filter = $(this).children('input').val(); // get the value of the input, which we filter on
+                //if(filter==='all') return;
+                var cards = $('#content-filemanager .card');
+                for (i = 0; i < cards.length; i++) {
+                    css = cards[i].className;
+                    if (css.indexOf(filter) > -1 || filter === 'all') {
+                        //cards[i].style.display = "";
+                        $(cards[i]).parent().removeClass('d-none').fadeIn()
+                    } else {
+                        $(cards[i]).parent().fadeOut("fast", function () {
+                            $(this).addClass('d-none');
+                        });
+                    }
+                }
+                //$('#content-filemanager .card').children('div:not([data-filter="' + filter + '"]').parent().addClass('d-none');
+            })
+
+        })
+
+
+    </script>
+    <script>
+
+        var ext_img = new Array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff');
+        var allowed_ext = new Array('doc', 'docx', 'pdf', 'xls', 'xlsx', 'txt', 'csv', 'html', 'psd', 'sql', 'log', 'fla', 'xml', 'ade', 'adp', 'ppt', 'pptx', 'zip', 'rar');
+        //str Editor ???
+        var track = '';
+        var curr_dir = '';
+
+
+        Dropzone.options.myAwesomeDropzone = {
+            //forceFallback: true,
+            dictInvalidFileType: "File extension is not allowed",
+            dictFileTooBig: "The upload exceeds the max filesize allowed",
+            dictResponseError: "SERVER ERROR",
+            paramName: "file", // The name that will be used to transfer the file
+            maxFilesize: 25, // MB
+            accept: function (file, done) {
+                var extension = file.name.split('.').pop();
+                if ($.inArray(extension.toLowerCase(), allowed_ext) > -1) {
+                    done();
+                } else {
+                    done("File extension is not allowed");
+                }
+            }
+        };
+
+        function loadFolderFiles(path) {
+
+
+            $("#progressbarloading").show();
+
+
+            if (path == undefined || path == null || path == '') path = '';
+
+            $("#breadcrumb-id").html('<li class="breadcrumb-item"><a href="#"><i class="ft-folder"></i></a></li>');
+
+            if (path != '' && path != null) {
+                var bread = `<li class="breadcrumb-item"><a href="#">Library</a></li>`;
+
+                var paths = path.split("/")
+
+                var temppath = '';
+
+                $.map(paths, function (p, i) {
+                    if (p != '') {
+                        temppath = temppath + "/" + p;
+                        $("#breadcrumb-id").append(`<li class="breadcrumb-item"><a href="javascript:void(0);" data-path="${temppath}">${p}</a></li>`)
+
+                    }
+                })
+
+            }
+
+            $("#breadcrumb-id").data("currentpath", path);
+            $("#dropzone-path-folder").val(path);
+
+            $.get('@Url.Action("GetInformation")', { 'path': path }, function (data) {
+
+                $("#content-filemanager").html('');
+                $.map(data, function (item, i) {
+                    if (item.isFolder) {
+                        $("#content-filemanager").append(createitemFolder(item));
+                    }
+                    else {
+                        $("#content-filemanager").append(createitemFile(item));
+                    }
+
+                });
+
+                $("#progressbarloading").hide();
+
+            });
+
+        }
+
+        function createitemFolder(data) {
+            var html = `<div class="col-lg-1 col-lg-2 col-md-3 col-md-4 col-sm-6 mb-4 cursor-pointer">
+
+                                                    <div class="card card-folders" data-path='${(data.path == null ? '' : data.path)}/${data.name}'>
+
+                                                                <div class="text-center overflow-hidden" style="background-image:url('${data.imageThumbs}');    background-repeat: no-repeat; background-position: center;min-height: 200px;display: block;">
+                                                            <div class="btn-group info-files" role="group">
+                                                                <a class="btn btn-light disabled" disabled><i class="ft-download"></i></a>
+                                                                <a class="btn btn-light disabled" disabled><i class='ft-eye'></i></a>
+                                                                <a class="btn btn-light folder-trash"><i class='ft-trash'></i></a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h6 class="card-title text-center">${data.name}</h6>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>`;
+            return html;
+        }
+
+        function createitemFile(data) {
+
+
+            var html = '';
+
+            if (data.isImage) {
+                html = `<div class="col-lg-1 col-lg-2 col-md-3 col-md-4 col-sm-6 mb-4 cursor-pointer-file">
+                                                                        <div class="card card-images" data-path='${(data.path == null ? '' : data.path)}/${data.name}'>
+                                                                        <div class="text-center overflow-hidden" style="background-image:url('${data.imageThumbs}');    background-repeat: no-repeat; background-position: center;min-height: 200px;display: block;">
+                                                                    <div class="btn-group info-files" role="group">
+                                                                        <a href="${data.fullImage}" target="_blank" class="btn btn-light"><i class="ft-download"></i></a>
+                                                                        <a href="${data.fullImage}" class="btn btn-light" data-toggle="lightbox"><i class='ft-eye'></i></a>
+                                                                        <a class="btn btn-light file-trash"><i class='ft-trash'></i></a>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <h6 class="card-title text-center">${data.name}</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>`;
+            } else {
+                html = `<div class="col-lg-1 col-lg-2 col-md-3 col-md-4 col-sm-6 mb-4 cursor-pointer-file">
+                                                                                <div class="card card-images" data-path='${(data.path == null ? '' : data.path)}/${data.name}'>
+                                                                                <div class="text-center overflow-hidden" style="background-image:url('${data.imageThumbs}');    background-repeat: no-repeat; background-position: center;min-height: 200px;display: block;">
+                                                                            <div class="btn-group info-files" role="group">
+                                                                                <a href="${data.fullImage}" target="_blank" class="btn btn-light"><i class="ft-download"></i></a>
+                                                                                <a  class="btn btn-light disabled" disabled><i class='ft-eye'></i></a>
+                                                                                <a class="btn btn-light file-trash"><i class='ft-trash'></i></a>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="card-body">
+                                                                            <h6 class="card-title text-center">${data.name}</h6>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>`;
+            }
+            return html;
+
+        }
+
+        $(function () {
+
+            loadFolderFiles(curr_dir);
+
+        })
+
+        // add event new folder
+
+
+        // create folder
+        $(document).on('click', '.new-folder', function () {
+            folder_name = window.prompt('Insert folder name:', 'New Folder');
+            if (folder_name) {
+                folder_path = $("#breadcrumb-id").data("currentpath") + '\\' + folder_name;
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("CreateFolder")",
+                    data: { folder: folder_path }
+                }).done(function (msg) {
+                    //TODO: add error handling
+                    //window.location = removeVariableFromURL(window.location, 'cmd');
+                    loadFolderFiles($("#breadcrumb-id").data("currentpath"));
+                });
+            }
+        })
+
+        //Delete File
+        $(document).on('click', '.file-trash', function (e) {
+
+            file_path = $(this).closest('div.card').data('path');
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete")",
+                data: { path: file_path, isfile: true }
+            }).done(function (msg) {
+                //TODO: add error handling
+                //window.location = removeVariableFromURL(window.location, 'cmd');
+                loadFolderFiles($("#breadcrumb-id").data("currentpath"));
+            });
+            e.stoppropagation();
+
+        })
+
+        //Delete Folder
+        $(document).on('click', '.folder-trash', function (e) {
+
+            file_path = $(this).closest('div.card').data('path');
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete")",
+                data: { path: file_path, isfile: false }
+            }).done(function (msg) {
+                //TODO: add error handling
+                //window.location = removeVariableFromURL(window.location, 'cmd');
+                loadFolderFiles($("#breadcrumb-id").data("currentpath"));
+            });
+            e.stoppropagation();
+
+        })
+
+        // move to folder
+        $(document).on('click', '.cursor-pointer', function (e) {
+
+            var border = "border border-warning";
+
+            if ($(this).children('.card').hasClass(border)) {
+                var path = $(this).children('.card').data('path');
+                loadFolderFiles(path);
+            } else {
+
+                var borders = $('#content-filemanager .border');
+
+                for (i = 0; i < borders.length; i++) {
+
+                    $(borders[i]).removeClass(border).fadeIn()
+
+                }
+
+
+                $(this).children('.card').addClass(border);
+            }
+
+
+
+
+
+
+
+        })
+        $(document).on('click', '.cursor-pointer-file', function (e) {
+
+            var border = "border border-warning";
+
+            if ($(this).children('.card').hasClass(border)) {
+                var path = $(this).children('.card').data('path');
+                alert(path);
+            } else {
+
+                var borders = $('#content-filemanager .border');
+
+                for (i = 0; i < borders.length; i++) {
+
+                    $(borders[i]).removeClass(border).fadeIn()
+
+                }
+
+
+                $(this).children('.card').addClass(border);
+            }
+
+
+
+
+
+
+
+        })
+        $(document).on('click', '#breadcrumb-id li a', function () {
+            var path = $(this).data('path');
+            loadFolderFiles(path);
+
+        })
+
+
+    </script>
+
+    <script>
+
+        var fillSelector = "'#demotextbox', window.opener.document'";
+
+        //********************************************
+        // functions
+        //********************************************
+        function apply(file, type_file) {
+            if (fillSelector != "") {
+                $(fillSelector).val(file);
+                window.close();
+            }
+            else {
+                var target = window.parent.document.getElementById(track + '_ifr');
+                var closed = window.parent.document.getElementsByClassName('mce-tinyfilemanager.net');
+                var ext = file.split('.').pop();
+                var fill = '';
+                if ($.inArray(ext.toLowerCase(), ext_img) > -1) {
+                    fill = $("<img />", { "src": file });
+                } else {
+                    fill = $("<a />").attr("href", file).text(file.replace(/\..+$/, ''));
+                }
+                $(target).contents().find('#tinymce').append(fill);
+                $(closed).find('.mce-close').trigger('click');
+            }
+        }
+
+        function apply_link(file, type_file) {
+            if (fillSelector != "") {
+                $(fillSelector).val(file);
+                window.close();
+            } else {
+                $('.mce-link_' + track, window.parent.document).val(file);
+                var closed = window.parent.document.getElementsByClassName('mce-tinyfilemanager.net');
+                if ($('.mce-text_' + track, window.parent.document).val() == '') $('.mce-text_' + track, window.parent.document).val(file.replace(/\..+$/, ''));
+                $(closed).find('.mce-close').trigger('click');
+            }
+        }
+
+        function apply_img(file, type_file) {
+            if (fillSelector != "") {
+                $(fillSelector).val(file);
+                window.close();
+            } else {
+                var target = window.parent.document.getElementsByClassName('mce-img_' + track);
+                var closed = window.parent.document.getElementsByClassName('mce-tinyfilemanager.net');
+                $(target).val(file);
+                $(closed).find('.mce-close').trigger('click');
+            }
+        }
+
+        function apply_video(file, type_file) {
+            if (fillSelector != "") {
+                $(fillSelector).val(file);
+                window.close();
+            } else {
+                var target = window.parent.document.getElementsByClassName('mce-video' + type_file + '_' + track);
+                var closed = window.parent.document.getElementsByClassName('mce-tinyfilemanager.net');
+                $(target).val(file);
+                $(closed).find('.mce-close').trigger('click');
+            }
+        }
+
+        function removeVariableFromURL(url_string, variable_name) {
+            var URL = String(url_string);
+            var regex = new RegExp("\\?" + variable_name + "=[^&]*&?", "gi");
+            URL = URL.replace(regex, '?');
+            regex = new RegExp("\\&" + variable_name + "=[^&]*&?", "gi");
+            URL = URL.replace(regex, '&');
+            URL = URL.replace(/(\?|&)$/, '');
+            regex = null;
+            return URL;
+        }
+    </script>
+
+</body>
+</html>
